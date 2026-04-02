@@ -39,6 +39,10 @@ drugsRouter.get('/', async (_, res) => {
 })
 
 drugsRouter.post('/', async (req, res) => {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ message: 'Forbidden' })
+  }
+
   const parsed = createDrugSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({
@@ -68,6 +72,10 @@ drugsRouter.post('/', async (req, res) => {
 })
 
 drugsRouter.put('/:id', async (req, res) => {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ message: 'Forbidden' })
+  }
+
   const id = Number(req.params.id)
   if (!Number.isInteger(id) || id <= 0) {
     return res.status(400).json({ message: 'Invalid drug id' })

@@ -17,6 +17,14 @@ pnpm --filter @vuzima/api db:seed
 
 ## 3) Start API and client
 
+Single terminal (recommended):
+
+```bash
+pnpm dev:servers
+```
+
+Or run separately:
+
 Terminal 1:
 
 ```bash

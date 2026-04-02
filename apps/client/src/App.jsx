@@ -31,7 +31,13 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('vuzima_token') ?? '')
   const [user, setUser] = useState(() => {
     const raw = localStorage.getItem('vuzima_user')
-    return raw ? JSON.parse(raw) : null
+    if (!raw) return null
+    try {
+      return JSON.parse(raw)
+    } catch {
+      localStorage.removeItem('vuzima_user')
+      return null
+    }
   })
 
   const { theme, toggleTheme } = useTheme()
@@ -366,18 +372,18 @@ function App() {
         api('/api/analytics/consumption'),
         api('/api/audits'),
         api('/api/suppliers'),
+        api('/api/drugs'),
       ]
 
       if (isAdmin) {
         jobs.push(api('/api/dashboard/summary'))
-        jobs.push(api('/api/drugs'))
         jobs.push(api('/api/reports'))
         jobs.push(api('/api/forecast/latest'))
         jobs.push(api('/api/users'))
       }
 
       const results = await Promise.all(jobs)
-      const [inventoryRes, alertsRes, reorderRes, analyticsRes, auditsRes, suppliersRes, dashboardRes, drugsRes, reportsRes, forecastRes, usersRes] = results
+      const [inventoryRes, alertsRes, reorderRes, analyticsRes, auditsRes, suppliersRes, drugsRes, dashboardRes, reportsRes, forecastRes, usersRes] = results
 
       setInventoryRows(inventoryRes?.data ?? [])
       setAlerts(alertsRes?.data ?? [])
@@ -385,10 +391,10 @@ function App() {
       setAnalyticsRows(analyticsRes?.data ?? [])
       setAudits(auditsRes?.data ?? [])
       setSuppliers(suppliersRes?.data ?? [])
+      setDrugs(drugsRes?.data ?? [])
 
       if (isAdmin) {
         setDashboard(dashboardRes ?? null)
-        setDrugs(drugsRes?.data ?? [])
         setReportRows(reportsRes?.data ?? [])
         setForecastData(forecastRes ?? { run: null, forecasts: [], anomalies: [] })
         setStaffRows(usersRes?.data ?? [])

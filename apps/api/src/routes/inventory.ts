@@ -2,6 +2,15 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { pool } from '../db/client.js'
 
+class RouteError extends Error {
+  status: number
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+  }
+}
+
 const movementSchema = z.object({
   inventory_item_id: z.number().int().positive(),
   movement_type: z.enum(['sale', 'return', 'adjustment']),
@@ -11,10 +20,15 @@ const movementSchema = z.object({
 
 export const inventoryRouter = Router()
 
+function isValidIsoDate(value: string) {
+  const parsed = new Date(`${value}T00:00:00Z`)
+  return !Number.isNaN(parsed.getTime())
+}
+
 const createInventoryItemSchema = z.object({
   drug_id: z.number().int().positive(),
   batch_number: z.string().max(100).optional(),
-  expiry_date: z.string().min(10),
+  expiry_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'expiry_date must be in YYYY-MM-DD format'),
   quantity_on_hand: z.number().int().nonnegative(),
 })
 
@@ -57,6 +71,13 @@ inventoryRouter.post('/movement', async (req, res) => {
   }
 
   const payload = parsed.data
+  if (payload.movement_type === 'sale' && payload.quantity_changed >= 0) {
+    return res.status(400).json({ message: 'Sale movement must have a negative quantity_changed' })
+  }
+  if (payload.movement_type === 'return' && payload.quantity_changed <= 0) {
+    return res.status(400).json({ message: 'Return movement must have a positive quantity_changed' })
+  }
+
   const actorId = req.user?.id
   if (!actorId) {
     return res.status(401).json({ message: 'Unauthorized' })
@@ -75,16 +96,14 @@ inventoryRouter.post('/movement', async (req, res) => {
     )
 
     if (!currentResult.rows[0]) {
-      await client.query('ROLLBACK')
-      return res.status(404).json({ message: 'Inventory item not found' })
+      throw new RouteError(404, 'Inventory item not found')
     }
 
     const current = currentResult.rows[0]
     const nextQuantity = current.quantity_on_hand + payload.quantity_changed
 
     if (nextQuantity < 0) {
-      await client.query('ROLLBACK')
-      return res.status(400).json({ message: 'Quantity cannot go below zero' })
+      throw new RouteError(400, 'Quantity cannot go below zero')
     }
 
     const updateResult = await client.query(
@@ -118,6 +137,9 @@ inventoryRouter.post('/movement', async (req, res) => {
     })
   } catch (error) {
     await client.query('ROLLBACK')
+    if (error instanceof RouteError) {
+      return res.status(error.status).json({ message: error.message })
+    }
     throw error
   } finally {
     client.release()
@@ -134,6 +156,9 @@ inventoryRouter.post('/', async (req, res) => {
   }
 
   const payload = parsed.data
+  if (!isValidIsoDate(payload.expiry_date)) {
+    return res.status(400).json({ message: 'expiry_date must be a valid date (YYYY-MM-DD)' })
+  }
   const result = await pool.query(
     `
     INSERT INTO inventory_items (drug_id, batch_number, expiry_date, quantity_on_hand)
@@ -161,6 +186,11 @@ inventoryRouter.post('/import-csv', async (req, res) => {
   }
 
   const rows = parsed.data.rows
+  for (const row of rows) {
+    if (!isValidIsoDate(row.expiry_date)) {
+      return res.status(400).json({ message: `Invalid expiry_date for drug_id ${row.drug_id}. Use YYYY-MM-DD` })
+    }
+  }
   const client = await pool.connect()
   try {
     await client.query('BEGIN')

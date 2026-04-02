@@ -34,10 +34,12 @@ app.use(express.json())
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 
 app.use('/api/health', healthRouter)
-app.use('/api/mock', mockRouter)
+if (env.NODE_ENV !== 'production') {
+  app.use('/api/mock', mockRouter)
+}
 app.use('/api/auth', authRouter)
 app.use('/api/suppliers', requireAuth, suppliersRouter)
-app.use('/api/drugs', requireAuth, requireRole(['admin']), drugsRouter)
+app.use('/api/drugs', requireAuth, drugsRouter)
 app.use('/api/inventory', requireAuth, requireRole(['admin', 'staff']), inventoryRouter)
 app.use('/api/dashboard', requireAuth, requireRole(['admin']), dashboardRouter)
 app.use('/api/alerts', requireAuth, requireRole(['admin', 'staff']), alertsRouter)

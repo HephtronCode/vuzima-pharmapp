@@ -1,6 +1,7 @@
 import { LazyMotion, domAnimation, m, useReducedMotion } from 'framer-motion'
 
 function AuthView({ loginForm, setLoginForm, loginErrors, loginSubmitting, onSubmit, toast }) {
+  const showDemoCreds = import.meta.env.DEV && import.meta.env.VITE_SHOW_DEMO_CREDENTIALS !== 'false'
   const reduceMotion = useReducedMotion()
   const MotionForm = m.form
   const MotionH1 = m.h1
@@ -55,10 +56,12 @@ function AuthView({ loginForm, setLoginForm, loginErrors, loginSubmitting, onSub
             {loginSubmitting ? 'Signing in...' : 'Sign In'}
           </MotionButton>
 
-          <MotionDiv className="hint" initial={reduceMotion ? false : { opacity: 0 }} animate={reduceMotion ? undefined : { opacity: 1 }} transition={itemTransition}>
-            <div>Admin: admin@vuzimapharmago.app / AdminPass123!</div>
-            <div>Staff: staff@vuzimapharmago.app / StaffPass123!</div>
-          </MotionDiv>
+          {showDemoCreds ? (
+            <MotionDiv className="hint" initial={reduceMotion ? false : { opacity: 0 }} animate={reduceMotion ? undefined : { opacity: 1 }} transition={itemTransition}>
+              <div>Admin: admin@vuzimapharmago.app / AdminPass123!</div>
+              <div>Staff: staff@vuzimapharmago.app / StaffPass123!</div>
+            </MotionDiv>
+          ) : null}
 
           <MotionDiv className="quote-grid" initial={reduceMotion ? false : { opacity: 0 }} animate={reduceMotion ? undefined : { opacity: 1 }} transition={itemTransition}>
             <blockquote>

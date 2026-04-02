@@ -2,6 +2,15 @@ import { Router } from 'express'
 import { z } from 'zod'
 import { pool } from '../db/client.js'
 
+class RouteError extends Error {
+  status: number
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.status = status
+  }
+}
+
 const createAuditSchema = z.object({
   title: z.string().min(3).max(255),
   section_name: z.string().min(2).max(255),
@@ -150,13 +159,11 @@ auditsRouter.post('/:id/lines', async (req, res) => {
     )
 
     if (auditState.rowCount === 0) {
-      await client.query('ROLLBACK')
-      return res.status(404).json({ message: 'Audit not found' })
+      throw new RouteError(404, 'Audit not found')
     }
 
     if (auditState.rows[0].status !== 'draft') {
-      await client.query('ROLLBACK')
-      return res.status(400).json({ message: 'Only draft audits can be edited' })
+      throw new RouteError(400, 'Only draft audits can be edited')
     }
 
     const inventoryResult = await client.query<{ quantity_on_hand: number }>(
@@ -165,8 +172,7 @@ auditsRouter.post('/:id/lines', async (req, res) => {
     )
 
     if (inventoryResult.rowCount === 0) {
-      await client.query('ROLLBACK')
-      return res.status(404).json({ message: 'Inventory item not found' })
+      throw new RouteError(404, 'Inventory item not found')
     }
 
     const systemQuantity = inventoryResult.rows[0].quantity_on_hand
@@ -207,6 +213,9 @@ auditsRouter.post('/:id/lines', async (req, res) => {
     return res.json(lineResult.rows[0])
   } catch (error) {
     await client.query('ROLLBACK')
+    if (error instanceof RouteError) {
+      return res.status(error.status).json({ message: error.message })
+    }
     throw error
   } finally {
     client.release()
@@ -233,13 +242,11 @@ auditsRouter.post('/:id/submit', async (req, res) => {
     )
 
     if (auditResult.rowCount === 0) {
-      await client.query('ROLLBACK')
-      return res.status(404).json({ message: 'Audit not found' })
+      throw new RouteError(404, 'Audit not found')
     }
 
     if (auditResult.rows[0].status !== 'draft') {
-      await client.query('ROLLBACK')
-      return res.status(400).json({ message: 'Only draft audits can be submitted' })
+      throw new RouteError(400, 'Only draft audits can be submitted')
     }
 
     const countResult = await client.query<{ count: string }>(
@@ -248,8 +255,7 @@ auditsRouter.post('/:id/submit', async (req, res) => {
     )
 
     if (Number(countResult.rows[0]?.count ?? 0) === 0) {
-      await client.query('ROLLBACK')
-      return res.status(400).json({ message: 'Cannot submit an empty audit' })
+      throw new RouteError(400, 'Cannot submit an empty audit')
     }
 
     await client.query(
@@ -268,6 +274,9 @@ auditsRouter.post('/:id/submit', async (req, res) => {
     return res.json({ message: 'Audit submitted for reconciliation approval' })
   } catch (error) {
     await client.query('ROLLBACK')
+    if (error instanceof RouteError) {
+      return res.status(error.status).json({ message: error.message })
+    }
     throw error
   } finally {
     client.release()
@@ -306,13 +315,11 @@ auditsRouter.post('/:id/reconcile', async (req, res) => {
     )
 
     if (auditResult.rowCount === 0) {
-      await client.query('ROLLBACK')
-      return res.status(404).json({ message: 'Audit not found' })
+      throw new RouteError(404, 'Audit not found')
     }
 
     if (auditResult.rows[0].status !== 'submitted') {
-      await client.query('ROLLBACK')
-      return res.status(400).json({ message: 'Only submitted audits can be reconciled' })
+      throw new RouteError(400, 'Only submitted audits can be reconciled')
     }
 
     await client.query(
@@ -395,6 +402,9 @@ auditsRouter.post('/:id/reconcile', async (req, res) => {
     })
   } catch (error) {
     await client.query('ROLLBACK')
+    if (error instanceof RouteError) {
+      return res.status(error.status).json({ message: error.message })
+    }
     throw error
   } finally {
     client.release()

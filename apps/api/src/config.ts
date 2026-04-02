@@ -9,4 +9,14 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('1d'),
 })
 
-export const env = envSchema.parse(process.env)
+const parsed = envSchema.parse(process.env)
+
+if (parsed.NODE_ENV === 'production' && parsed.JWT_SECRET === 'dev-secret-change-me') {
+  throw new Error('JWT_SECRET must be explicitly set in production and cannot use development default')
+}
+
+if (parsed.NODE_ENV === 'production' && parsed.JWT_SECRET.length < 32) {
+  throw new Error('JWT_SECRET must be at least 32 characters in production')
+}
+
+export const env = parsed

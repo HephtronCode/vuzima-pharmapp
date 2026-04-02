@@ -3,6 +3,10 @@ import { createNotification } from './notificationService.js'
 
 type AlertTier = 'expired' | 'critical_7d' | 'warning_30d' | 'info_90d'
 
+function toUtcMidnight(value: Date) {
+  return Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate())
+}
+
 function determineTier(daysToExpiry: number): AlertTier | null {
   if (daysToExpiry < 0) {
     return 'expired'
@@ -34,10 +38,10 @@ export async function runExpiryAlertScan() {
     )
 
     for (const row of inventoryRows.rows) {
-      const expiry = new Date(row.expiry_date)
+      const expiry = new Date(`${row.expiry_date}T00:00:00Z`)
       const today = new Date()
       const oneDayMs = 24 * 60 * 60 * 1000
-      const daysToExpiry = Math.floor((expiry.getTime() - today.getTime()) / oneDayMs)
+      const daysToExpiry = Math.floor((toUtcMidnight(expiry) - toUtcMidnight(today)) / oneDayMs)
       const tier = determineTier(daysToExpiry)
       if (!tier) {
         continue

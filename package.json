@@ -5,6 +5,7 @@
   "description": "Vuzima Pharma Go monorepo",
   "scripts": {
     "dev": "pnpm --filter @vuzima/client dev",
+    "dev:servers": "pnpm --parallel --filter @vuzima/api --filter @vuzima/client dev",
     "dev:api": "pnpm --filter @vuzima/api dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
