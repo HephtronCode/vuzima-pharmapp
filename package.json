@@ -1,0 +1,21 @@
+{
+  "name": "vuzima-pharmapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vuzima Pharma Go monorepo",
+  "scripts": {
+    "dev": "pnpm --filter @vuzima/client dev",
+    "dev:api": "pnpm --filter @vuzima/api dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  },
+  "keywords": [
+    "vuzima",
+    "pharmacy",
+    "pern"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@10.17.1"
+}

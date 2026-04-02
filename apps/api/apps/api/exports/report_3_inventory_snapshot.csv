@@ -1,0 +1,4 @@
+brand_name,batch_number,expiry_date,quantity_on_hand,reorder_level
+Amoxicillin 250mg,AM-031R,Thu Apr 02 2026 00:00:00 GMT+0100 (West Africa Standard Time),180,250
+Artemether-Lumefantrine,AL-102C,Mon Apr 06 2026 00:00:00 GMT+0100 (West Africa Standard Time),210,300
+Paracetamol 500mg,PA-774A,Tue Aug 11 2026 00:00:00 GMT+0100 (West Africa Standard Time),1113,900

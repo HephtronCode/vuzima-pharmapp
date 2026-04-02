@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vuzima Pharma Go MVP Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500;700&family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f2f6fb;
+      --ink: #0f1f2d;
+      --muted: #5a6a79;
+      --surface: #ffffff;
+      --line: #d8e1ea;
+      --primary: #0e7490;
+      --primary-soft: #e0f2f7;
+      --success: #15803d;
+      --warning: #b45309;
+      --danger: #b91c1c;
+      --accent: #1d4ed8;
+      --radius: 14px;
+      --shadow: 0 10px 28px rgba(15, 31, 45, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Manrope", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, #dff4ff 0%, transparent 32%),
+        radial-gradient(circle at 90% 10%, #e8f7eb 0%, transparent 28%),
+        var(--bg);
+    }
+
+    .shell {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px 24px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 16px;
+    }
+
+    .side,
+    .main {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .side {
+      padding: 16px;
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0e7490, #1d4ed8);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font: 700 16px/1 "Sora", sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 4px 0 0;
+    }
+
+    .role {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font: 600 13px/1.2 "Manrope", sans-serif;
+      margin-bottom: 12px;
+      background: #fff;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav button {
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font: 600 13px/1 "Manrope", sans-serif;
+      transition: all 0.18s ease;
+    }
+
+    .nav button.active {
+      background: var(--primary-soft);
+      border-color: #8ac3d2;
+      color: #0c5062;
+    }
+
+    .hint {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      background: #f8fafc;
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .main { padding: 18px; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font: 700 22px/1.1 "Sora", sans-serif;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 700;
+      background: #fff;
+    }
+
+    .chip.critical { border-color: #fecaca; color: #991b1b; background: #fef2f2; }
+    .chip.warning { border-color: #fed7aa; color: #9a3412; background: #fff7ed; }
+    .chip.good { border-color: #bbf7d0; color: #166534; background: #f0fdf4; }
+
+    .panel {
+      display: none;
+      animation: fade 0.25s ease;
+    }
+
+    .panel.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .kpis {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .label { font-size: 12px; color: var(--muted); }
+    .value {
+      margin-top: 6px;
+      font: 700 24px/1.1 "IBM Plex Sans", sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    .trend { margin-top: 8px; font-size: 12px; font-weight: 700; }
+    .trend.up { color: var(--success); }
+    .trend.down { color: var(--danger); }
+
+    .split {
+      margin-top: 12px;
+      grid-template-columns: 1.35fr 1fr;
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .sev {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .sev.s7 { color: #991b1b; background: #fee2e2; }
+    .sev.s30 { color: #9a3412; background: #ffedd5; }
+    .sev.s90 { color: #155e75; background: #ecfeff; }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .table th,
+    .table td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      padding: 10px 8px;
+      vertical-align: middle;
+    }
+
+    .table th { color: var(--muted); font-size: 12px; font-weight: 700; }
+
+    .status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid;
+    }
+
+    .status.ok { color: #166534; background: #f0fdf4; border-color: #bbf7d0; }
+    .status.low { color: #9a3412; background: #fff7ed; border-color: #fed7aa; }
+    .status.risk { color: #991b1b; background: #fef2f2; border-color: #fecaca; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px 11px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn.primary { background: var(--primary); color: #fff; border-color: #0e7490; }
+    .btn.warn { background: #fff7ed; color: #9a3412; border-color: #fdba74; }
+
+    .mobile-frame {
+      width: min(100%, 360px);
+      border: 1px solid #cfd8e3;
+      border-radius: 24px;
+      margin-top: 10px;
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 8px 22px rgba(15, 31, 45, 0.1);
+    }
+
+    .mobile-head {
+      font: 700 14px/1.2 "Sora", sans-serif;
+      margin-bottom: 10px;
+    }
+
+    .count-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .count-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .count-item input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      font: 600 13px/1 "Manrope", sans-serif;
+    }
+
+    .offline {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #9a3412;
+      background: #ffedd5;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: inline-block;
+    }
+
+    .note {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+      .side {
+        position: static;
+      }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .split { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 580px) {
+      .kpis { grid-template-columns: 1fr; }
+      .topbar h2 { font-size: 18px; }
+      .value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="side">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Vuzima Pharma Go</h1>
+          <p class="sub">Pharmacy Operations Platform</p>
+        </div>
+      </div>
+
+      <select id="role" class="role" aria-label="Role selector">
+        <option value="admin" selected>Role: Admin / Owner</option>
+        <option value="staff">Role: Staff / Pharmacist</option>
+      </select>
+
+      <nav class="nav" aria-label="Primary">
+        <button class="active" data-target="dashboard">Dashboard</button>
+        <button data-target="inventory">Inventory</button>
+        <button data-target="alerts">Expiry + Reorder Alerts</button>
+        <button data-target="audit">Mobile Stock Audit</button>
+        <button data-target="reports">Reports + Exports</button>
+      </nav>
+
+      <div class="hint">
+        Mockup intent: validate information hierarchy, role access, and mobile-first audit flow before coding.
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h2 id="viewTitle">Dashboard</h2>
+        <div class="chip-row">
+          <span class="chip critical">7d expiry: 9 batches</span>
+          <span class="chip warning">Low stock: 14 drugs</span>
+          <span class="chip good">Sync: Healthy</span>
+        </div>
+      </div>
+
+      <section class="panel active" id="dashboard">
+        <div class="grid kpis">
+          <article class="card">
+            <div class="label">Total Stock Value</div>
+            <div class="value">GHS 1,284,230</div>
+            <div class="trend up">+5.3% vs last month</div>
+          </article>
+          <article class="card">
+            <div class="label">Value Expiring Soon</div>
+            <div class="value">GHS 124,900</div>
+            <div class="trend down">Needs action in 7-30 days</div>
+          </article>
+          <article class="card">
+            <div class="label">Fast Movers (Top 20%)</div>
+            <div class="value">42 SKUs</div>
+            <div class="trend up">Paracetamol +12% forecast</div>
+          </article>
+          <article class="card">
+            <div class="label">Months of Stock</div>
+            <div class="value">2.8</div>
+            <div class="trend">Across critical categories</div>
+          </article>
+        </div>
+
+        <div class="grid split">
+          <article class="card">
+            <strong>Alert Rail</strong>
+            <div class="list">
+              <div class="row"><span>Amoxicillin 500mg - Expiry 2026-04-07</span><span class="sev s7">Critical 7d</span></div>
+              <div class="row"><span>Insulin Pens - Qty below reorder level</span><span class="sev s30">Reorder</span></div>
+              <div class="row"><span>Cough Syrup Batch KS-112 - Expiry 2026-05-01</span><span class="sev s30">Warning 30d</span></div>
+            </div>
+            <div class="actions">
+              <button class="btn primary">Open Alert Center</button>
+              <button class="btn warn">Generate Reorder Draft</button>
+            </div>
+          </article>
+
+          <article class="card" id="financeCard">
+            <strong>Owner Finance Snapshot</strong>
+            <div class="list">
+              <div class="row"><span>Weekly Sales Estimate</span><strong>GHS 212,400</strong></div>
+              <div class="row"><span>Gross Margin (est.)</span><strong>24.1%</strong></div>
+              <div class="row"><span>Dead Stock (60+ days)</span><strong>GHS 31,220</strong></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="inventory">
+        <article class="card">
+          <strong>Inventory Command Center</strong>
+          <div class="actions">
+            <button class="btn primary">Add Drug</button>
+            <button class="btn">Add Batch</button>
+            <button class="btn">Filter: Supplier</button>
+            <button class="btn">Filter: Expiry Window</button>
+            <button class="btn">Filter: Low Stock</button>
+          </div>
+
+          <table class="table" aria-label="Inventory table">
+            <thead>
+              <tr>
+                <th>Drug</th>
+                <th>Batch</th>
+                <th>Expiry</th>
+                <th>Qty</th>
+                <th>Reorder Level</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Paracetamol 500mg</td>
+                <td>PA-774A</td>
+                <td>2026-08-11</td>
+                <td>1,120</td>
+                <td>900</td>
+                <td><span class="status ok">Healthy</span></td>
+              </tr>
+              <tr>
+                <td>Artemether-Lumefantrine</td>
+                <td>AL-102C</td>
+                <td>2026-04-06</td>
+                <td>210</td>
+                <td>300</td>
+                <td><span class="status low">Low Stock</span></td>
+              </tr>
+              <tr>
+                <td>Amoxicillin 250mg</td>
+                <td>AM-031R</td>
+                <td>2026-04-02</td>
+                <td>160</td>
+                <td>250</td>
+                <td><span class="status risk">Expiry Risk</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="panel" id="alerts">
+        <article class="card">
+          <strong>Expiry and Reorder Intelligence</strong>
+          <div class="list">
+            <div class="row"><span>Amoxicillin 250mg (Batch AM-031R)</span><span class="sev s7">Expiry 7d</span></div>
+            <div class="row"><span>ORS Sachets - Stock 80 vs Reorder 200</span><span class="sev s30">Low Stock</span></div>
+            <div class="row"><span>Paracetamol Syrup (Batch PS-219M)</span><span class="sev s90">Expiry 90d</span></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary">Acknowledge Selected</button>
+            <button class="btn">Send In-App</button>
+            <button class="btn">Email Summary</button>
+            <button class="btn">SMS Critical Only</button>
+          </div>
+
+          <p class="note">Reorder formula shown in detail panel: ROP = (Average Daily Usage x Lead Time) + Safety Stock.</p>
+        </article>
+      </section>
+
+      <section class="panel" id="audit">
+        <div class="grid split">
+          <article class="card">
+            <strong>Mobile-First Audit Flow</strong>
+            <div class="list">
+              <div class="row"><span>1) Select shelf/section</span><strong>Pain Relief</strong></div>
+              <div class="row"><span>2) Enter physical counts</span><strong>Offline-ready</strong></div>
+              <div class="row"><span>3) Submit discrepancies</span><strong>Admin approval required</strong></div>
+            </div>
+            <div class="actions">
+              <button class="btn primary">Start New Audit</button>
+              <button class="btn">Review Pending Reconciliation</button>
+            </div>
+          </article>
+
+          <article class="mobile-frame" aria-label="Mobile preview">
+            <div class="mobile-head">Stock Count - Pain Relief</div>
+            <div class="count-grid">
+              <div class="count-item">
+                <strong>Paracetamol 500mg</strong>
+                <input value="1120" aria-label="Paracetamol count" />
+              </div>
+              <div class="count-item">
+                <strong>Ibuprofen 400mg</strong>
+                <input value="378" aria-label="Ibuprofen count" />
+              </div>
+              <div class="count-item">
+                <strong>Diclofenac Gel</strong>
+                <input value="92" aria-label="Diclofenac count" />
+              </div>
+            </div>
+            <div class="offline">Offline mode: 3 updates queued, auto-sync when online.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="reports">
+        <article class="card">
+          <strong>Reports and Export Center</strong>
+          <div class="actions">
+            <button class="btn">Date Range</button>
+            <button class="btn">Branch</button>
+            <button class="btn primary">Generate CSV</button>
+            <button class="btn primary">Generate Excel</button>
+            <button class="btn primary">Generate PDF</button>
+          </div>
+
+          <table class="table" aria-label="Report jobs">
+            <thead>
+              <tr>
+                <th>Report</th>
+                <th>Requested By</th>
+                <th>Format</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Expiring Stock Value</td>
+                <td>admin@vuzimapharmago.app</td>
+                <td>CSV</td>
+                <td><span class="status ok">Ready</span></td>
+                <td><button class="btn">Download</button></td>
+              </tr>
+              <tr>
+                <td>Monthly Consumption</td>
+                <td>owner@vuzimapharmago.app</td>
+                <td>Excel</td>
+                <td><span class="status low">Processing</span></td>
+                <td><button class="btn">Refresh</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const navButtons = document.querySelectorAll('.nav button');
+    const panels = document.querySelectorAll('.panel');
+    const title = document.getElementById('viewTitle');
+    const roleSelect = document.getElementById('role');
+    const financeCard = document.getElementById('financeCard');
+
+    function setView(target) {
+      navButtons.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.target === target);
+      });
+      panels.forEach((panel) => {
+        panel.classList.toggle('active', panel.id === target);
+      });
+      const map = {
+        dashboard: 'Dashboard',
+        inventory: 'Inventory Command Center',
+        alerts: 'Expiry + Reorder Alerts',
+        audit: 'Mobile Stock Audit',
+        reports: 'Reports + Exports'
+      };
+      title.textContent = map[target] || 'Vuzima Pharma Go';
+    }
+
+    navButtons.forEach((btn) => {
+      btn.addEventListener('click', () => setView(btn.dataset.target));
+    });
+
+    roleSelect.addEventListener('change', () => {
+      const isAdmin = roleSelect.value === 'admin';
+      financeCard.style.display = isAdmin ? 'block' : 'none';
+    });
+  </script>
+</body>
+</html>
