@@ -17,7 +17,12 @@ async function run() {
       VALUES
         ('admin@vuzimapharmago.app', $1, 'admin'),
         ('staff@vuzimapharmago.app', $2, 'staff')
-      ON CONFLICT (email) DO NOTHING;
+      ON CONFLICT (email)
+      DO UPDATE SET
+        password_hash = EXCLUDED.password_hash,
+        role = EXCLUDED.role,
+        is_active = TRUE,
+        updated_at = NOW();
       `,
       [adminPassword, staffPassword],
     )
