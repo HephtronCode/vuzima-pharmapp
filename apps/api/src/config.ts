@@ -16,6 +16,7 @@ const envSchema = z.object({
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
   DATABASE_URL: z.string().default('postgresql://postgres:postgres@localhost:5432/vuzima'),
   REDIS_URL: z.string().optional(),
+  PGSSL: boolFromEnv.optional(),
   JWT_SECRET: z.string().min(12).default('dev-secret-change-me'),
   JWT_EXPIRES_IN: z.string().default('1d'),
   COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).optional(),
@@ -41,6 +42,7 @@ if (cookieSameSite === 'none' && !cookieSecure) {
 
 export const env = {
   ...parsed,
+  PGSSL: parsed.PGSSL ?? false,
   COOKIE_SAME_SITE: cookieSameSite,
   COOKIE_SECURE: cookieSecure,
 }
