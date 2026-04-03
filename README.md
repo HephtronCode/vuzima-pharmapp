@@ -58,6 +58,15 @@ pnpm --filter @vuzima/api db:migrate
 pnpm --filter @vuzima/api db:seed
 ```
 
+### Seeded accounts (development/demo)
+
+After running `db:seed`, these default accounts exist:
+
+- Admin: `admin@vuzimapharmago.app` / `AdminPass123!`
+- Staff: `staff@vuzimapharmago.app` / `StaffPass123!`
+
+Note: these credentials are not shown on the login page UI anymore. They are documented here for local/dev bootstrap only.
+
 ### Required Render env vars to set manually
 
 - On API service:

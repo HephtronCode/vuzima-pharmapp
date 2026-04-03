@@ -23,6 +23,10 @@ Fix:
 2. Ensure frontend sends `credentials: include` for API calls.
 3. Ensure non-GET requests include `x-csrf-token`.
 
+Note:
+
+- `POST /api/auth/login` is intentionally excluded from CSRF validation so first-time login can establish auth and CSRF cookies.
+
 ## Symptom: Logged in UI but API requests return `401 Unauthorized`
 
 Likely causes:
@@ -40,6 +44,29 @@ Fix:
 1. Re-login.
 2. Confirm `CLIENT_ORIGIN` and client URL are aligned.
 3. In local/dev, verify both app and API are using expected hostnames and ports.
+
+## Symptom: Login returns `500 Internal server error`
+
+Likely causes:
+
+- Backend dependencies unavailable (Postgres down).
+- Redis limiter unreachable without fallback in older code versions.
+
+How to verify:
+
+1. Check API terminal logs right after clicking Sign In.
+2. Confirm DB connectivity with migration command.
+3. Confirm Redis connectivity if `REDIS_URL` is configured.
+
+Fix:
+
+```bash
+docker compose up -d db cache
+pnpm --filter @vuzima/api db:migrate
+pnpm --filter @vuzima/api db:seed
+```
+
+If Redis is optional in local setup, run with empty `REDIS_URL` or ensure API version includes memory fallback for login limiter.
 
 ## Symptom: Works in one environment but fails in another
 

@@ -40,6 +40,11 @@ export function clearCsrfCookie(res: Response) {
 }
 
 export function requireCsrf(req: Request, res: Response, next: NextFunction) {
+  if (req.path === '/api/auth/login') {
+    next()
+    return
+  }
+
   if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
     next()
     return

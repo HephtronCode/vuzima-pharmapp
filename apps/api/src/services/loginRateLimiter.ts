@@ -23,7 +23,11 @@ function keyForEmail(email: string) {
 }
 
 function createRedisLimiter(redisUrl: string): LoginRateLimiter {
-  const redis = new Redis(redisUrl)
+  const redis = new Redis(redisUrl, {
+    lazyConnect: true,
+    maxRetriesPerRequest: 1,
+    enableOfflineQueue: false,
+  })
 
   async function readFailures(key: string) {
     const raw = await redis.get(key)
@@ -113,5 +117,35 @@ function createMemoryLimiter(): LoginRateLimiter {
 }
 
 export const loginRateLimiter: LoginRateLimiter = env.REDIS_URL
-  ? createRedisLimiter(env.REDIS_URL)
+  ? (() => {
+      const memoryLimiter = createMemoryLimiter()
+      const redisLimiter = createRedisLimiter(env.REDIS_URL as string)
+
+      return {
+        async isBlocked(ip, email) {
+          try {
+            return await redisLimiter.isBlocked(ip, email)
+          } catch (error) {
+            console.warn('Redis limiter unavailable, falling back to memory limiter', error)
+            return memoryLimiter.isBlocked(ip, email)
+          }
+        },
+        async registerFailure(ip, email) {
+          try {
+            return await redisLimiter.registerFailure(ip, email)
+          } catch (error) {
+            console.warn('Redis limiter unavailable, falling back to memory limiter', error)
+            return memoryLimiter.registerFailure(ip, email)
+          }
+        },
+        async clearEmailFailures(email) {
+          try {
+            await redisLimiter.clearEmailFailures(email)
+          } catch (error) {
+            console.warn('Redis limiter unavailable, falling back to memory limiter', error)
+            await memoryLimiter.clearEmailFailures(email)
+          }
+        },
+      }
+    })()
   : createMemoryLimiter()
