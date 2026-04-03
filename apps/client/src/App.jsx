@@ -155,6 +155,19 @@ function App() {
   })
   const isAdmin = user?.role === 'admin'
   const visibleTabs = useMemo(() => (isAdmin ? tabs : tabs.filter((tab) => tab.id !== 'reports' && tab.id !== 'staff')), [isAdmin])
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 900)
+
+  useEffect(() => {
+    function handleResize() {
+      const mobile = window.innerWidth <= 900
+      setIsMobile(mobile)
+      if (!mobile) setIsMobileMenuOpen(false)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -924,12 +937,15 @@ function App() {
 
   return (
     <div className="app-shell">
+      {isMobile && isMobileMenuOpen ? <div className="sidebar-backdrop" onClick={() => setIsMobileMenuOpen(false)} /> : null}
       <Sidebar
         user={user}
         tabs={visibleTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
         onLogout={handleLogout}
+        mobileOpen={isMobileMenuOpen}
+        onCloseMobile={() => setIsMobileMenuOpen(false)}
       />
 
       <main className="main">
@@ -939,6 +955,8 @@ function App() {
           onRefresh={loadCoreData}
           theme={theme}
           onToggleTheme={toggleTheme}
+          showMenuButton={isMobile}
+          onToggleMenu={() => setIsMobileMenuOpen((current) => !current)}
         />
 
         {activeTab === 'dashboard' ? (

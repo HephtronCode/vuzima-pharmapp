@@ -1,7 +1,14 @@
-function TopBar({ title, loading, onRefresh, theme, onToggleTheme }) {
+function TopBar({ title, loading, onRefresh, theme, onToggleTheme, showMenuButton, onToggleMenu }) {
   return (
     <header className="topbar">
-      <h1>{title}</h1>
+      <div className="topbar-title-row">
+        {showMenuButton ? (
+          <button type="button" className="menu-toggle" onClick={onToggleMenu}>
+            Menu
+          </button>
+        ) : null}
+        <h1>{title}</h1>
+      </div>
       <div className="topbar-actions">
         <button type="button" onClick={onToggleTheme}>
           {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}

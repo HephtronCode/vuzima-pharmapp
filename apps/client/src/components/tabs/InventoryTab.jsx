@@ -183,7 +183,7 @@ drug_id,batch_number,expiry_date,quantity_on_hand
             <option value="50">50 / page</option>
           </select>
         </div>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>Drug</th>
@@ -203,11 +203,11 @@ drug_id,batch_number,expiry_date,quantity_on_hand
             ) : (
               inventoryPaged.items.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.brand_name}</td>
-                  <td>{row.batch_number}</td>
-                  <td>{formatDate(row.expiry_date)}</td>
-                  <td>{row.quantity_on_hand}</td>
-                  <td>{row.reorder_level}</td>
+                  <td data-label="Drug">{row.brand_name}</td>
+                  <td data-label="Batch">{row.batch_number}</td>
+                  <td data-label="Expiry">{formatDate(row.expiry_date)}</td>
+                  <td data-label="Quantity">{row.quantity_on_hand}</td>
+                  <td data-label="Reorder">{row.reorder_level}</td>
                 </tr>
               ))
             )}

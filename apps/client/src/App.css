@@ -106,6 +106,11 @@ button:disabled {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 260px 1fr;
+  position: relative;
+}
+
+.sidebar-backdrop {
+  display: none;
 }
 
 .sidebar {
@@ -115,6 +120,16 @@ button:disabled {
   display: grid;
   align-content: start;
   gap: 12px;
+}
+
+.sidebar-mobile-head {
+  display: none;
+}
+
+.ghost-close {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
 
 .sidebar h2 {
@@ -155,17 +170,31 @@ nav button.active {
   padding: 16px;
   display: grid;
   gap: 12px;
+  min-width: 0;
 }
 
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .topbar-actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.topbar-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-toggle {
+  display: none;
 }
 
 .topbar h1 {
@@ -301,6 +330,183 @@ th {
 
   .grid.two {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(86vw, 340px);
+    transform: translateX(-105%);
+    transition: transform 180ms ease;
+    z-index: 80;
+    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.28);
+    overflow: auto;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-mobile-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(6, 13, 24, 0.38);
+    z-index: 75;
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar-actions {
+    justify-content: stretch;
+  }
+
+  .topbar-actions button {
+    flex: 1 1 140px;
+  }
+
+  .main {
+    padding: 12px;
+    gap: 10px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-search {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .row-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .row-actions button,
+  .form-grid button,
+  .toolbar-row button {
+    width: 100%;
+  }
+
+  .card table {
+    max-height: 300px;
+  }
+
+  .pager {
+    justify-content: space-between;
+  }
+
+  .toast {
+    right: 10px;
+    left: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 420px) {
+  .topbar h1 {
+    font-size: 18px;
+  }
+
+  .auth-shell {
+    padding: 12px;
+  }
+
+  .auth-card {
+    padding: 14px;
+  }
+
+  th,
+  td {
+    padding: 6px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mobile-table {
+    border-collapse: separate;
+    border-spacing: 0 8px;
+  }
+
+  .mobile-table thead {
+    display: none;
+  }
+
+  .mobile-table,
+  .mobile-table tbody,
+  .mobile-table tr,
+  .mobile-table td {
+    display: block;
+    width: 100%;
+    table-layout: auto;
+  }
+
+  .mobile-table tr {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface-solid);
+    padding: 8px;
+  }
+
+  .mobile-table td {
+    border-bottom: 1px dashed var(--line);
+    padding: 8px 6px;
+    min-height: 36px;
+    overflow-wrap: anywhere;
+  }
+
+  .mobile-table td:last-child {
+    border-bottom: none;
+  }
+
+  .mobile-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .mobile-table td[data-label='Actions'] .row-actions,
+  .mobile-table td[data-label='Action'] .row-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-table td[data-label='Actions'] button,
+  .mobile-table td[data-label='Action'] button {
+    width: 100%;
   }
 }
 

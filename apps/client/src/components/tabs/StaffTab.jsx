@@ -66,7 +66,7 @@ function StaffTab({
           <SortButton label="Email" sortState={staffSort} sortKey="email" onToggle={onToggleStaffSort} />
           <SortButton label="Created" sortState={staffSort} sortKey="created_at" onToggle={onToggleStaffSort} />
         </div>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -92,12 +92,12 @@ function StaffTab({
 
                 return (
                   <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td>{row.email}</td>
-                    <td>{row.role}</td>
-                    <td>{row.is_active ? 'active' : 'disabled'}</td>
-                    <td>{formatDate(row.created_at)}</td>
-                    <td>
+                    <td data-label="ID">{row.id}</td>
+                    <td data-label="Email">{row.email}</td>
+                    <td data-label="Role">{row.role}</td>
+                    <td data-label="Status">{row.is_active ? 'active' : 'disabled'}</td>
+                    <td data-label="Created">{formatDate(row.created_at)}</td>
+                    <td data-label="Actions">
                       <div className="row-actions">
                         <button
                           type="button"

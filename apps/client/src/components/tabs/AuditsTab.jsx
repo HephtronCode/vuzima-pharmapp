@@ -89,7 +89,7 @@ function AuditsTab({
           <SortButton label="Status" sortState={auditSort} sortKey="status" onToggle={onToggleAuditSort} />
           <SortButton label="Created" sortState={auditSort} sortKey="created_at" onToggle={onToggleAuditSort} />
         </div>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -112,10 +112,10 @@ function AuditsTab({
             ) : (
               auditsPaged.items.map((audit) => (
                 <tr key={audit.id}>
-                  <td>{audit.id}</td>
-                  <td>{audit.title}</td>
-                  <td>{audit.status}</td>
-                  <td><button type="button" onClick={() => onOpenAudit(audit.id)}>Open</button></td>
+                  <td data-label="ID">{audit.id}</td>
+                  <td data-label="Title">{audit.title}</td>
+                  <td data-label="Status">{audit.status}</td>
+                  <td data-label="Action"><button type="button" onClick={() => onOpenAudit(audit.id)}>Open</button></td>
                 </tr>
               ))
             )}
@@ -131,7 +131,7 @@ function AuditsTab({
       <article className="card full">
         <h3>Selected Audit Detail</h3>
         <div className="muted">Audit ID: {selectedAudit?.audit?.id ?? '--'}</div>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>Drug</th>
@@ -147,11 +147,11 @@ function AuditsTab({
             ) : (
               selectedAudit.lines.map((line) => (
                 <tr key={line.id}>
-                  <td>{line.brand_name}</td>
-                  <td>{line.batch_number}</td>
-                  <td>{line.system_quantity}</td>
-                  <td>{line.counted_quantity}</td>
-                  <td>{line.difference}</td>
+                  <td data-label="Drug">{line.brand_name}</td>
+                  <td data-label="Batch">{line.batch_number}</td>
+                  <td data-label="System Qty">{line.system_quantity}</td>
+                  <td data-label="Counted Qty">{line.counted_quantity}</td>
+                  <td data-label="Difference">{line.difference}</td>
                 </tr>
               ))
             )}

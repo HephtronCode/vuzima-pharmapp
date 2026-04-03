@@ -34,7 +34,7 @@ function AlertsTab({
           <SortButton label="Days" sortState={alertSort} sortKey="days_to_expiry" onToggle={onToggleAlertSort} />
           <SortButton label="Drug" sortState={alertSort} sortKey="brand_name" onToggle={onToggleAlertSort} />
         </div>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>Drug</th>
@@ -59,10 +59,10 @@ function AlertsTab({
                 const pending = acknowledgingAlertIds.includes(row.id)
                 return (
                   <tr key={row.id}>
-                    <td>{row.brand_name}</td>
-                    <td>{row.alert_tier}</td>
-                    <td>{row.days_to_expiry}</td>
-                    <td>
+                    <td data-label="Drug">{row.brand_name}</td>
+                    <td data-label="Tier">{row.alert_tier}</td>
+                    <td data-label="Days">{row.days_to_expiry}</td>
+                    <td data-label="Action">
                       <button
                         type="button"
                         onClick={() => onAcknowledgeAlert(row.id)}
@@ -86,7 +86,7 @@ function AlertsTab({
 
       <article className="card">
         <h3>Reorder Suggestions</h3>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>Drug</th>
@@ -101,10 +101,10 @@ function AlertsTab({
             ) : (
               reorderRows.slice(0, 20).map((row) => (
                 <tr key={row.drug_id}>
-                  <td>{row.brand_name}</td>
-                  <td>{row.current_stock}</td>
-                  <td>{row.reorder_point}</td>
-                  <td>{row.suggested_order_qty}</td>
+                  <td data-label="Drug">{row.brand_name}</td>
+                  <td data-label="Current">{row.current_stock}</td>
+                  <td data-label="ROP">{row.reorder_point}</td>
+                  <td data-label="Suggest">{row.suggested_order_qty}</td>
                 </tr>
               ))
             )}
@@ -114,7 +114,7 @@ function AlertsTab({
 
       <article className="card full">
         <h3>Consumption Analytics</h3>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>Drug</th>
@@ -130,11 +130,11 @@ function AlertsTab({
             ) : (
               analyticsRows.map((row) => (
                 <tr key={row.drug_id}>
-                  <td>{row.brand_name}</td>
-                  <td>{row.sold_units_30d}</td>
-                  <td>{row.avg_weekly_consumption}</td>
-                  <td>{row.amc}</td>
-                  <td>{row.months_of_stock_remaining ?? '--'}</td>
+                  <td data-label="Drug">{row.brand_name}</td>
+                  <td data-label="Sold (30d)">{row.sold_units_30d}</td>
+                  <td data-label="Weekly Avg">{row.avg_weekly_consumption}</td>
+                  <td data-label="AMC">{row.amc}</td>
+                  <td data-label="Months Remaining">{row.months_of_stock_remaining ?? '--'}</td>
                 </tr>
               ))
             )}

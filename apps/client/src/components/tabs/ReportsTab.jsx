@@ -45,7 +45,7 @@ function ReportsTab({
           <SortButton label="Status" sortState={reportSort} sortKey="status" onToggle={onToggleReportSort} />
           <SortButton label="ID" sortState={reportSort} sortKey="id" onToggle={onToggleReportSort} />
         </div>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>ID</th>
@@ -70,12 +70,12 @@ function ReportsTab({
             ) : (
               reportsPaged.items.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.id}</td>
-                  <td>{row.report_type}</td>
-                  <td>{row.status}</td>
-                  <td>{row.format}</td>
-                  <td>{row.requested_by_email ?? '--'}</td>
-                  <td>{row.file_path ?? '--'}</td>
+                  <td data-label="ID">{row.id}</td>
+                  <td data-label="Type">{row.report_type}</td>
+                  <td data-label="Status">{row.status}</td>
+                  <td data-label="Format">{row.format}</td>
+                  <td data-label="Requested By">{row.requested_by_email ?? '--'}</td>
+                  <td data-label="File Path">{row.file_path ?? '--'}</td>
                 </tr>
               ))
             )}

@@ -44,7 +44,7 @@ function DashboardTab({
 
       <article className="card full">
         <h3>Forecast Output</h3>
-        <table>
+        <table className="mobile-table">
           <thead>
             <tr>
               <th>Drug</th>
@@ -60,11 +60,11 @@ function DashboardTab({
             ) : (
               forecastData.forecasts.map((row) => (
                 <tr key={row.id}>
-                  <td>{row.brand_name}</td>
-                  <td>{row.predicted_units_30d}</td>
-                  <td>{row.baseline_units_30d}</td>
-                  <td>{row.change_percent}</td>
-                  <td>{row.confidence_score}</td>
+                  <td data-label="Drug">{row.brand_name}</td>
+                  <td data-label="Predicted 30d">{row.predicted_units_30d}</td>
+                  <td data-label="Baseline 30d">{row.baseline_units_30d}</td>
+                  <td data-label="Change %">{row.change_percent}</td>
+                  <td data-label="Confidence">{row.confidence_score}</td>
                 </tr>
               ))
             )}
