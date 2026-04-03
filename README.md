@@ -3,6 +3,10 @@
 Last updated: 2026-04-02
 Owner: Engineering
 
+## Live Demo
+
+- Client (Render): `https://vuzima-pharmapp-3084.onrender.com`
+
 ## What to read first
 
 - Product and scope: `docs/01-product/overview.md`
