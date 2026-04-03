@@ -35,3 +35,8 @@ docker compose ps
 
 - First line: engineering on-call.
 - Include failing endpoint, payload, and timestamp when escalating.
+
+## Render references
+
+- Deployment guide: `docs/06-operations/render-deploy.md`
+- Blueprint file: `render.yaml`

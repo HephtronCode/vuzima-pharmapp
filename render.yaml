@@ -1,0 +1,47 @@
+databases:
+  - name: vuzima-postgres
+    databaseName: vuzima
+    user: vuzima
+
+services:
+  - type: redis
+    name: vuzima-redis
+    ipAllowList: []
+
+  - type: web
+    name: vuzima-api
+    env: node
+    plan: free
+    autoDeploy: true
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @vuzima/api build
+    startCommand: pnpm --filter @vuzima/api start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: "10000"
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vuzima-postgres
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: vuzima-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+
+  - type: static
+    name: vuzima-client
+    env: static
+    autoDeploy: true
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @vuzima/client build
+    staticPublishPath: apps/client/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false

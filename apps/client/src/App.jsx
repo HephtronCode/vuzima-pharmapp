@@ -26,19 +26,30 @@ const tabs = [
   { id: 'staff', label: 'Staff' },
 ]
 
+const CSRF_STORAGE_KEY = 'vuzima_csrf_token'
+
+function loadStoredUser() {
+  const raw = localStorage.getItem('vuzima_user')
+  if (!raw) return null
+  try {
+    return JSON.parse(raw)
+  } catch {
+    localStorage.removeItem('vuzima_user')
+    return null
+  }
+}
+
+function loadStoredCsrfToken() {
+  return localStorage.getItem(CSRF_STORAGE_KEY) ?? ''
+}
+
 function App() {
+  const initialUser = loadStoredUser()
+  const initialCsrfToken = loadStoredCsrfToken()
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [token, setToken] = useState(localStorage.getItem('vuzima_token') ?? '')
-  const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem('vuzima_user')
-    if (!raw) return null
-    try {
-      return JSON.parse(raw)
-    } catch {
-      localStorage.removeItem('vuzima_user')
-      return null
-    }
-  })
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(initialUser))
+  const [user, setUser] = useState(initialUser)
+  const [csrfToken, setCsrfToken] = useState(initialCsrfToken)
 
   const { theme, toggleTheme } = useTheme()
   const { toast, showToast } = useToast()
@@ -142,8 +153,6 @@ function App() {
     staffId: null,
     password: '',
   })
-
-  const isAuthenticated = Boolean(token)
   const isAdmin = user?.role === 'admin'
   const visibleTabs = useMemo(() => (isAdmin ? tabs : tabs.filter((tab) => tab.id !== 'reports' && tab.id !== 'staff')), [isAdmin])
 
@@ -343,9 +352,12 @@ function App() {
 
   async function api(path, options = {}) {
     const headers = { 'Content-Type': 'application/json', ...(options.headers ?? {}) }
-    if (token) headers.Authorization = `Bearer ${token}`
+    const method = (options.method ?? 'GET').toUpperCase()
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(method) && csrfToken) {
+      headers['x-csrf-token'] = csrfToken
+    }
 
-    const response = await fetch(`${API_BASE}${path}`, { ...options, headers })
+    const response = await fetch(`${API_BASE}${path}`, { ...options, headers, credentials: 'include' })
 
     let body = null
     try {
@@ -362,7 +374,7 @@ function App() {
   }
 
   async function loadCoreData() {
-    if (!token) return
+    if (!isAuthenticated) return
     setLoading(true)
     try {
       const jobs = [
@@ -409,10 +421,10 @@ function App() {
   useEffect(() => {
     loadCoreData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, isAdmin])
+  }, [isAuthenticated, isAdmin])
 
   useEffect(() => {
-    if (!selectedAuditId || !token) {
+    if (!selectedAuditId || !isAuthenticated) {
       setSelectedAudit(null)
       return
     }
@@ -421,7 +433,7 @@ function App() {
       .then((data) => setSelectedAudit(data))
       .catch((error) => showToast('error', formatError(error)))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAuditId, token])
+  }, [selectedAuditId, isAuthenticated])
 
   async function handleLogin(event) {
     event.preventDefault()
@@ -435,6 +447,7 @@ function App() {
       const data = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(loginForm),
       }).then(async (res) => {
         const body = await res.json().catch(() => ({}))
@@ -442,10 +455,13 @@ function App() {
         return body
       })
 
-      setToken(data.token)
+      setIsAuthenticated(true)
       setUser(data.user)
-      localStorage.setItem('vuzima_token', data.token)
+      setCsrfToken(data.csrfToken ?? '')
       localStorage.setItem('vuzima_user', JSON.stringify(data.user))
+      if (data.csrfToken) {
+        localStorage.setItem(CSRF_STORAGE_KEY, data.csrfToken)
+      }
       showToast('success', 'Signed in successfully')
     } catch (error) {
       showToast('error', formatError(error))
@@ -455,8 +471,14 @@ function App() {
   }
 
   function handleLogout() {
-    setToken('')
+    fetch(`${API_BASE}/api/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    }).catch(() => null)
+    setIsAuthenticated(false)
+    setActiveTab('dashboard')
     setUser(null)
+    setCsrfToken('')
     setDashboard(null)
     setInventoryRows([])
     setAlerts([])
@@ -468,8 +490,8 @@ function App() {
     setReportRows([])
     setStaffRows([])
     setForecastData({ run: null, forecasts: [], anomalies: [] })
-    localStorage.removeItem('vuzima_token')
     localStorage.removeItem('vuzima_user')
+    localStorage.removeItem(CSRF_STORAGE_KEY)
     showToast('success', 'Logged out')
   }
 

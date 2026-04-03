@@ -37,3 +37,36 @@ For any feature change:
 1. Update at least one relevant file under `docs/`.
 2. If API changes, update the matching file in `docs/04-api/`.
 3. If schema changes, update `docs/03-architecture/data-model.md` and DB troubleshooting docs.
+
+## Render Full-Stack Deploy
+
+This repo includes `render.yaml` for blueprint-based setup.
+
+### Services
+
+- `vuzima-api` (Web Service)
+- `vuzima-client` (Static Site)
+- `vuzima-postgres` (Managed Postgres)
+- `vuzima-redis` (Managed Redis)
+
+### Post-deploy one-time commands
+
+Run these from Render shell/one-off job on the API service:
+
+```bash
+pnpm --filter @vuzima/api db:migrate
+pnpm --filter @vuzima/api db:seed
+```
+
+### Required Render env vars to set manually
+
+- On API service:
+  - `CLIENT_ORIGIN=https://<your-render-client-domain>`
+- On static client service:
+  - `VITE_API_BASE_URL=https://<your-render-api-domain>`
+
+### GitHub Actions in this repo
+
+- `.github/workflows/ci.yml` - lint/build on push and PR
+- `.github/workflows/deploy-render.yml` - trigger Render deploy hooks on `main`
+- `.github/workflows/keepalive.yml` - optional scheduled API health ping (disabled unless repo var enabled)

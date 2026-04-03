@@ -4,6 +4,7 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import type { NextFunction, Request, Response } from 'express'
 import { env } from './config.js'
+import { requireCsrf } from './middleware/csrf.js'
 import { requireAuth, requireRole } from './middleware/auth.js'
 import { analyticsRouter } from './routes/analytics.js'
 import { alertsRouter } from './routes/alerts.js'
@@ -32,6 +33,7 @@ app.use(
 )
 app.use(express.json())
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'))
+app.use(requireCsrf)
 
 app.use('/api/health', healthRouter)
 if (env.NODE_ENV !== 'production') {

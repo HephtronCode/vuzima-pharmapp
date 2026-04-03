@@ -10,11 +10,19 @@ function unauthorized(res: Response) {
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization
-  if (!header || !header.startsWith('Bearer ')) {
+  const headerToken = header && header.startsWith('Bearer ') ? header.slice('Bearer '.length) : null
+  const cookieHeader = req.headers.cookie ?? ''
+  const cookieToken = cookieHeader
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('vuzima_access_token='))
+    ?.slice('vuzima_access_token='.length)
+
+  const token = headerToken ?? cookieToken
+  if (!token) {
     return unauthorized(res)
   }
 
-  const token = header.slice('Bearer '.length)
   try {
     const payload = verifyAccessToken(token)
     req.user = {
