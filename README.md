@@ -62,6 +62,8 @@ pnpm --filter @vuzima/api db:seed
 
 - On API service:
   - `CLIENT_ORIGIN=https://<your-render-client-domain>`
+  - `COOKIE_SAME_SITE=none` (for cross-site frontend/API cookie auth)
+  - `COOKIE_SECURE=true`
 - On static client service:
   - `VITE_API_BASE_URL=https://<your-render-api-domain>`
 

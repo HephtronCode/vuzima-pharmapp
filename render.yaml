@@ -35,6 +35,10 @@ services:
         generateValue: true
       - key: JWT_EXPIRES_IN
         value: 1d
+      - key: COOKIE_SAME_SITE
+        value: none
+      - key: COOKIE_SECURE
+        value: "true"
 
   - type: web
     name: vuzima-client

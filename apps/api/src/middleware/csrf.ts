@@ -24,8 +24,8 @@ export function generateCsrfToken() {
 export function setCsrfCookie(res: Response, token: string) {
   res.cookie(CSRF_COOKIE_NAME, token, {
     httpOnly: false,
-    sameSite: 'lax',
-    secure: env.NODE_ENV === 'production',
+    sameSite: env.COOKIE_SAME_SITE,
+    secure: env.COOKIE_SECURE,
     path: '/',
   })
 }
@@ -33,8 +33,8 @@ export function setCsrfCookie(res: Response, token: string) {
 export function clearCsrfCookie(res: Response) {
   res.clearCookie(CSRF_COOKIE_NAME, {
     httpOnly: false,
-    sameSite: 'lax',
-    secure: env.NODE_ENV === 'production',
+    sameSite: env.COOKIE_SAME_SITE,
+    secure: env.COOKIE_SECURE,
     path: '/',
   })
 }

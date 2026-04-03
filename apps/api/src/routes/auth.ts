@@ -85,8 +85,8 @@ authRouter.post('/login', async (req, res) => {
 
   res.cookie(ACCESS_TOKEN_COOKIE, token, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: env.NODE_ENV === 'production',
+    sameSite: env.COOKIE_SAME_SITE,
+    secure: env.COOKIE_SECURE,
     maxAge: 24 * 60 * 60 * 1000,
     path: '/',
   })
@@ -101,8 +101,8 @@ authRouter.post('/login', async (req, res) => {
 authRouter.post('/logout', (_, res) => {
   res.clearCookie(ACCESS_TOKEN_COOKIE, {
     httpOnly: true,
-    sameSite: 'lax',
-    secure: env.NODE_ENV === 'production',
+    sameSite: env.COOKIE_SAME_SITE,
+    secure: env.COOKIE_SECURE,
     path: '/',
   })
   clearCsrfCookie(res)

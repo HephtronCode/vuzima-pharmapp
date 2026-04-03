@@ -52,3 +52,4 @@ Fix:
 
 1. Verify `NODE_ENV`, `CLIENT_ORIGIN`, and reverse-proxy behavior.
 2. Ensure production traffic is HTTPS when secure cookies are enabled.
+3. For cross-site hosting (different API and frontend domains), set `COOKIE_SAME_SITE=none` and `COOKIE_SECURE=true`.

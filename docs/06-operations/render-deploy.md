@@ -21,6 +21,8 @@ Owner: Engineering
 ### API service
 
 - `CLIENT_ORIGIN=https://<your-client-domain>`
+- `COOKIE_SAME_SITE=none` (required for cross-site cookie auth)
+- `COOKIE_SECURE=true`
 
 ### Client service
 
