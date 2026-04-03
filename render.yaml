@@ -36,9 +36,9 @@ services:
       - key: JWT_EXPIRES_IN
         value: 1d
 
-  - type: static
+  - type: web
     name: vuzima-client
-    env: static
+    runtime: static
     autoDeploy: true
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @vuzima/client build
     staticPublishPath: apps/client/dist
